@@ -9,6 +9,7 @@ package org.usfirst.frc.team610.robot;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,8 +24,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot {
 	
 	public Victor leftFront, leftBack, rightFront, rightBack;
-	public Victor shooterLeft, shooterRight;
+	public Victor shooterLeft, shooterRight, feeder, vibrator;
 	public DoubleSolenoid shifterOne, shifterTwo, intakeOne, intakeTwo;
+	public Joystick driver;
+	
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -32,6 +35,15 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		
+		leftFront = new Victor(1);
+		leftBack = new Victor(0);
+		rightBack = new Victor(2);
+		rightFront = new Victor(3);
+		shooterLeft = new Victor(4);
+		driver = new Joystick(0);
+		feeder = new Victor(8);
+		
 		
 	}
 
@@ -64,6 +76,44 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		double x, y;
+		int buttonCounter = 0;
+		double left, right;
+		y = driver.getRawAxis(1);
+		x = driver.getRawAxis(4);
+		y = y*y*y;
+		x = x*x*x;
+		
+		left = y-x;
+		right = y+x;
+		
+		//kaj drive
+		leftFront.set(left);
+		leftBack.set(left);
+		rightFront.set(right);
+		rightBack.set(right);
+		
+		
+		//shooter toggle
+		if(driver.getRawButton(6)) {
+			shooterLeft.set(-0.7);
+		}
+		else {
+			shooterLeft.set(0);
+		}
+		
+		
+		
+		//feeder and vibrator
+		if(driver.getRawButton(5)) {
+			feeder.set(-0.6);
+			vibrator.set(1.0);
+		} else {
+			feeder.set(0);
+			vibrator.set(0);
+		}
+
+		
 	}
 
 	/**
