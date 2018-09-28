@@ -24,9 +24,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot {
 	
 	public Victor leftFront, leftBack, rightFront, rightBack;
-	public Victor shooterLeft, shooterRight, feeder, vibrator;
+	public Victor shooterLeft, feeder, vibrator;
 	public DoubleSolenoid shifterOne, shifterTwo, intakeOne, intakeTwo;
-	public Joystick driver;
+	public Joystick driver, operator;
+	public Victor intake;
+	public DoubleSolenoid intakePush, gearFlap;
+	public Victor turret;
 	
 
 	/**
@@ -41,8 +44,23 @@ public class Robot extends IterativeRobot {
 		rightBack = new Victor(2);
 		rightFront = new Victor(3);
 		shooterLeft = new Victor(4);
-		driver = new Joystick(0);
 		feeder = new Victor(8);
+		vibrator = new Victor(5);
+		
+		driver = new Joystick(0);
+		operator = new Joystick(1);
+
+		intake = new Victor(7);
+		
+		intakePush = new DoubleSolenoid(4,5);
+		intakePush = new DoubleSolenoid(2,3);
+		
+		turret = new Victor(9);
+
+		
+		
+		
+
 		
 		
 	}
@@ -77,7 +95,6 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		double x, y;
-		int buttonCounter = 0;
 		double left, right;
 		y = driver.getRawAxis(1);
 		x = driver.getRawAxis(4);
@@ -95,24 +112,39 @@ public class Robot extends IterativeRobot {
 		
 		
 		//shooter toggle
-		if(driver.getRawButton(6)) {
+		if(operator.getRawButton(6)) {
 			shooterLeft.set(-0.7);
-		}
-		else {
-			shooterLeft.set(0);
+		} else {
+			shooterLeft.set(0.0);
 		}
 		
 		
 		
 		//feeder and vibrator
-		if(driver.getRawButton(5)) {
-			feeder.set(-0.6);
+		if(operator.getRawButton(5)) {
+			feeder.set(0.6);
 			vibrator.set(1.0);
 		} else {
-			feeder.set(0);
-			vibrator.set(0);
+			feeder.set(0.0);
+			vibrator.set(0.0);
 		}
 
+		
+		if(driver.getRawButton(5)) {
+			intake.set(0.7);
+		} else {
+			intake.set(0.0);
+		}
+		
+		if(driver.getRawButton(3)) {
+		intakePush.set(DoubleSolenoid.Value.kForward);
+		} else if(driver.getRawButton(2)) {
+			intakePush.set(DoubleSolenoid.Value.kReverse);
+		}
+		
+		turret.set(operator.getRawAxis(0));
+		
+		
 		
 	}
 
